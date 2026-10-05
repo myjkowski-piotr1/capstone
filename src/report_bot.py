@@ -29,7 +29,10 @@ def load_sales(path: Path) -> list[dict[str, Any]]:
     """Wczytuje i oczyszcza zamówienia z CSV; błędy wskazuje numerem wiersza."""
     with path.open("r", newline="", encoding="utf-8-sig") as sales_file:
         reader = csv.DictReader(sales_file)
-        columns = set(reader.fieldnames or [])
+        if not reader.fieldnames:
+            raise ValueError(f"{path}: plik CSV jest pusty albo nie zawiera nagłówka")
+
+        columns = set(reader.fieldnames)
         missing_columns = REQUIRED_COLUMNS - columns
         if missing_columns:
             missing = ", ".join(sorted(missing_columns))
@@ -73,6 +76,8 @@ def load_config(path: Path) -> Decimal:
     """Wczytuje z JSON i sprawdza minimalny próg przychodu dla zamówienia."""
     with path.open("r", encoding="utf-8-sig") as config_file:
         config = json.load(config_file)
+    if not isinstance(config, dict):
+        raise ValueError(f"{path}: konfiguracja JSON musi być obiektem")
     try:
         threshold = Decimal(str(config["threshold"]))
     except (KeyError, InvalidOperation) as error:
@@ -133,10 +138,15 @@ def main() -> None:
     parser.add_argument("--output", type=Path, default=DEFAULT_OUTPUT, help="Ścieżka do wynikowego pliku CSV.")
     args = parser.parse_args()
 
-    orders = load_sales(args.input)
-    threshold = load_config(args.config)
-    report = create_report(orders, threshold)
-    write_report(report, args.output)
+    try:
+        orders = load_sales(args.input)
+        threshold = load_config(args.config)
+        report = create_report(orders, threshold)
+        write_report(report, args.output)
+    except FileNotFoundError as error:
+        parser.error(f"nie znaleziono pliku: {error.filename}")
+    except (OSError, UnicodeError, csv.Error, json.JSONDecodeError, ValueError) as error:
+        parser.error(str(error))
     print(
         f"Utworzono raport {args.output}: zamówienia={report['total_orders']}, "
         f"przychód={report['total_revenue']}."
