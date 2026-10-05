@@ -1,0 +1,16 @@
+[project]
+name = "scheduled-report-bot"
+version = "0.1.0"
+description = "Generator dziennego raportu sprzedaży z pliku CSV."
+requires-python = ">=3.12"
+dependencies = []
+
+[dependency-groups]
+dev = [
+    "pytest>=8.0",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+pythonpath = ["src"]
