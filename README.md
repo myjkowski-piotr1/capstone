@@ -40,4 +40,4 @@ Workflow GitHub Actions uruchamia się codziennie o 08:00 UTC i można go też u
 
 ## Plan prac
 
-Lista zadań i prosta tablica „Do zrobienia / W trakcie / Zrobione” są zapisane w plikach [PROJECT_ISSUES.md](./PROJECT_ISSUES.md) i [PROJECT_BOARD.md](./PROJECT_BOARD.md). Są to lokalne materiały planistyczne. Prawdziwe GitHub Issues i tablicę GitHub Project trzeba utworzyć po opublikowaniu projektu w repozytorium GitHub.
+Zgłoszenia z listą zadań są w pliku [PROJECT_ISSUES.md](./PROJECT_ISSUES.md), a prawdziwa tablica GitHub Project jest dostępna [tutaj](https://github.com/users/myjkowski-piotr1/projects/1). Zadania 1–4 są zamknięte, a zadanie 5 pozostaje w trakcie weryfikacji automatyzacji GitHub Actions.
