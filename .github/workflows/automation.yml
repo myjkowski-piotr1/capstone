@@ -1,0 +1,42 @@
+name: Automatyczny raport sprzedaży
+
+on:
+  push:
+  pull_request:
+  schedule:
+    - cron: "0 8 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  testy-i-raport:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Pobranie repozytorium
+        uses: actions/checkout@v4
+
+      - name: Konfiguracja Pythona
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Konfiguracja uv
+        uses: astral-sh/setup-uv@v5
+
+      - name: Instalacja projektu i zależności testowych
+        run: uv sync --dev
+
+      - name: Uruchomienie testów
+        run: uv run pytest
+
+      - name: Wygenerowanie dziennego raportu
+        run: uv run python src/report_bot.py
+
+      - name: Udostępnienie raportu
+        uses: actions/upload-artifact@v4
+        with:
+          name: dzienny-raport-sprzedazy
+          path: reports/daily_summary.csv
+          if-no-files-found: error
